@@ -19,6 +19,7 @@ coilCompose = "2.7.0"
 mockk = "1.13.13"
 coroutinesTest = "1.9.0"
 coreTesting = "2.2.0"
+composeGoogleFonts = "1.7.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "coreTesting" }
+androidx-compose-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "composeGoogleFonts" }
 
 
 [plugins]
