@@ -5,44 +5,30 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.LineHeightStyle.Alignment
-import androidx.compose.ui.text.style.LineHeightStyle.Trim
 
-val ManropeFontFamily = FontFamily.SansSerif
-val InterFontFamily = FontFamily.SansSerif
-
+// Set of Material typography styles to start with
 val Typography = Typography(
-    displayLarge = TextStyle(
-        fontFamily = ManropeFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 56.sp,
-        lineHeight = 64.sp,
-        letterSpacing = (-0.02).sp
-    ),
-    headlineMedium = TextStyle(
-        fontFamily = ManropeFontFamily,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 28.sp,
-        lineHeight = 36.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 22.sp,
-        lineHeight = 28.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = InterFontFamily,
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
     ),
-    labelMedium = TextStyle(
-        fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 12.sp,
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )
+    */
 )
