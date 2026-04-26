@@ -31,7 +31,6 @@ class WishlistViewModel @Inject constructor(
 
     fun moveToCollection(record: VinylRecord) {
         viewModelScope.launch {
-            // Update the record's flag and save it
             saveRecordUseCase(record.copy(isInWishlist = false))
         }
     }

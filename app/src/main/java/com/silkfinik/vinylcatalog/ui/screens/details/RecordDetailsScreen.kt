@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
@@ -45,7 +46,7 @@ fun RecordDetailsScreen(
     
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
-            onBackClick() // dismiss screen on save
+            onBackClick()
         }
     }
 
@@ -67,15 +68,15 @@ fun RecordDetailsScreen(
     }
 
     val scrollState = rememberScrollState()
+    val isReadOnly = record.isInWishlist
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(bottom = 120.dp) // breathing room for FAB
+                .padding(bottom = 120.dp)
         ) {
-            // Hero Section: Album Cover
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,7 +89,6 @@ fun RecordDetailsScreen(
                     modifier = Modifier.fillMaxSize().background(Color.Black)
                 )
                 
-                // Back Button
                 Box(modifier = Modifier.padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 16.dp, start = 16.dp)) {
                     IconButton(
                         onClick = onBackClick,
@@ -100,7 +100,6 @@ fun RecordDetailsScreen(
                     }
                 }
 
-                // Tonal Overlay
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -114,14 +113,12 @@ fun RecordDetailsScreen(
                 )
             }
 
-            // Content Canvas (Overlaps the hero image)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .offset(y = (-48).dp)
                     .padding(horizontal = 24.dp)
             ) {
-                // Title and Artist
                 Column(modifier = Modifier.padding(bottom = 32.dp)) {
                     Text(
                         text = record.title,
@@ -139,7 +136,6 @@ fun RecordDetailsScreen(
                     )
                 }
 
-                // Metadata Grid
                 Row(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column(
                         modifier = Modifier.weight(1f).background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(8.dp)).padding(16.dp)
@@ -165,7 +161,6 @@ fun RecordDetailsScreen(
                 
                 Spacer(modifier = Modifier.height(48.dp))
 
-                // Vinyl Format Editable Action Chips
                 Text("VINYL FORMAT", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, letterSpacing = 2.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(16.dp))
                 val formats = listOf("LP", "2xLP", "7\" EP")
@@ -176,7 +171,7 @@ fun RecordDetailsScreen(
                             color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest,
                             contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                             shape = CircleShape,
-                            modifier = Modifier.clickable { viewModel.updateFormat(formatStr) }
+                            modifier = Modifier.clickable(enabled = !isReadOnly) { viewModel.updateFormat(formatStr) }
                         ) {
                             Text(
                                 text = formatStr,
@@ -191,7 +186,6 @@ fun RecordDetailsScreen(
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // Pressing Quality Rating Interactive Widget
                 Text("PRESSING QUALITY", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, letterSpacing = 2.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -200,7 +194,7 @@ fun RecordDetailsScreen(
                             imageVector = if (i <= uiState.rating) Icons.Default.Star else Icons.Outlined.StarBorder,
                             contentDescription = "Star $i",
                             tint = if (i <= uiState.rating) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant,
-                            modifier = Modifier.size(40.dp).clickable { viewModel.updateRating(i) }
+                            modifier = Modifier.size(40.dp).clickable(enabled = !isReadOnly) { viewModel.updateRating(i) }
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -209,7 +203,6 @@ fun RecordDetailsScreen(
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // Personal Notes Interactive Input
                 Text("LINER NOTES & CONDITION", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, letterSpacing = 2.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
@@ -224,30 +217,44 @@ fun RecordDetailsScreen(
                         focusedBorderColor = MaterialTheme.colorScheme.secondary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
                     ),
+                    readOnly = isReadOnly,
                     textStyle = MaterialTheme.typography.bodyLarge
                 )
             }
         }
 
-        // Floating Save Button Action
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 32.dp, bottom = 40.dp)
         ) {
             IconButton(
-                onClick = { viewModel.saveChanges() },
+                onClick = { 
+                    if (isReadOnly) {
+                        viewModel.addToCollection() 
+                    } else {
+                        viewModel.saveChanges() 
+                    }
+                },
                 modifier = Modifier
                     .size(80.dp)
                     .shadow(16.dp, CircleShape)
                     .background(
                         Brush.linearGradient(
-                            colors = listOf(MaterialTheme.colorScheme.secondary, Color(0xFFFF5722)) // Editor gradient #b02f00 to #ff5722
+                            colors = if (isReadOnly) 
+                                listOf(Color(0xFF2E7D32), Color(0xFF4CAF50)) // Green for Add to Collection
+                            else 
+                                listOf(MaterialTheme.colorScheme.secondary, Color(0xFFFF5722)) // Editor gradient
                         ),
                         CircleShape
                     )
             ) {
-                Icon(Icons.Default.Check, contentDescription = "Save", tint = Color.White, modifier = Modifier.size(40.dp))
+                Icon(
+                    imageVector = if (isReadOnly) Icons.Default.Add else Icons.Default.Check, 
+                    contentDescription = if (isReadOnly) "Add to Collection" else "Save", 
+                    tint = Color.White, 
+                    modifier = Modifier.size(40.dp)
+                )
             }
         }
     }

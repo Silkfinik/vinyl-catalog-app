@@ -41,12 +41,20 @@ class SearchViewModel @Inject constructor(
 
     fun setFilter(filter: String) {
         _uiState.update { it.copy(activeFilter = filter) }
-        // Local filtering would be applied here in a more advanced scenario.
+        val currentState = _uiState.value
+        if (currentState.query.trim().length > 2) {
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                performSearch(currentState.query.trim())
+            }
+        }
     }
 
     private suspend fun performSearch(query: String) {
+        val currentState = _uiState.value
+        val genre = if (currentState.activeFilter == "All Results") null else currentState.activeFilter
         _uiState.update { it.copy(isLoading = true, error = null) }
-        val result = searchDiscogsUseCase(query)
+        val result = searchDiscogsUseCase(query, genre)
         result.fold(
             onSuccess = { records ->
                 _uiState.update { it.copy(isLoading = false, results = records) }

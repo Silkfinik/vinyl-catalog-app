@@ -27,10 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import com.silkfinik.vinylcatalog.ui.theme.VinylCatalogTheme
 
-/**
- * The "Sleeve" Card. 
- * Uses large corners, no borders, and relies on color tonal shift for depth.
- */
+
 @Composable
 fun VinylCard(
     title: String,
@@ -39,8 +36,7 @@ fun VinylCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // According to DESIGN.md: surface_container_lowest, radius: lg (2rem/32dp), no shadow/dividers
-    val surfaceContainerLowest = MaterialTheme.colorScheme.surface // Simplified for fallback, actual is defined in Theme
+    val surfaceContainerLowest = MaterialTheme.colorScheme.surface
     
     Card(
         modifier = modifier
@@ -48,25 +44,24 @@ fun VinylCard(
             .clickable(onClick = onClick),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White // Using absolute fallback or actual token
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
-            // Square image logic
             AsyncImage(
-                model = coverUrl ?: "", // Provide a default placeholder if needed
+                model = coverUrl ?: "",
                 contentDescription = "Album cover: $title",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f) // Square
-                    .clip(MaterialTheme.shapes.large) // Clip top corners
+                    .aspectRatio(1f)
+                    .clip(MaterialTheme.shapes.large)
             )
             
-            Spacer(modifier = Modifier.height(16.dp)) // spacing-4 for separating image and metadata
+            Spacer(modifier = Modifier.height(16.dp))
             
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Text(

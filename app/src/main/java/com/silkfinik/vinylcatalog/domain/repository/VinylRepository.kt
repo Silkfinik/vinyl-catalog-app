@@ -9,5 +9,5 @@ interface VinylRepository {
     suspend fun getRecordById(id: String): VinylRecord?
     suspend fun insertOrUpdate(record: VinylRecord)
     suspend fun delete(record: VinylRecord)
-    suspend fun searchDiscogs(query: String): Result<List<VinylRecord>>
+    suspend fun searchDiscogs(query: String, genre: String? = null): Result<List<VinylRecord>>
 }

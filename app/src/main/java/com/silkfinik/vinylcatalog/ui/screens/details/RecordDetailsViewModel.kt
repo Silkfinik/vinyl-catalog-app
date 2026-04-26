@@ -69,4 +69,14 @@ class RecordDetailsViewModel @Inject constructor(
             _uiState.update { it.copy(isSaved = true) }
         }
     }
+
+    fun addToCollection() {
+        val currentState = _uiState.value
+        val record = currentState.record ?: return
+        viewModelScope.launch {
+            val updatedRecord = record.copy(isInWishlist = false)
+            saveRecordUseCase(updatedRecord)
+            _uiState.update { it.copy(isSaved = true) }
+        }
+    }
 }

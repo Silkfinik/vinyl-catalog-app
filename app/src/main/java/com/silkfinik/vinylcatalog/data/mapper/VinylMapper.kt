@@ -48,7 +48,7 @@ fun DiscogsReleaseDto.toDomain(): VinylRecord {
         coverUrl = coverImage,
         year = year,
         label = label?.firstOrNull(),
-        genre = null,
+        genre = genre?.firstOrNull(),
         format = format?.firstOrNull(),
         rating = 0,
         notes = null,

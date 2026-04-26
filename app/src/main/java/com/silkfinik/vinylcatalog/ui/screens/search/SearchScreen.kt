@@ -9,11 +9,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuOpen
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +32,7 @@ import com.silkfinik.vinylcatalog.ui.components.VinylTopAppBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchReleaseScreen(
+    onRecordClick: (String) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -44,17 +43,7 @@ fun SearchReleaseScreen(
         topBar = {
             VinylTopAppBar(
                 title = "Discover",
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { /* TODO: Drawer */ }) {
-                        Icon(Icons.AutoMirrored.Filled.MenuOpen, contentDescription = "Menu")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* TODO: Filters */ }) {
-                        Icon(Icons.Default.Tune, contentDescription = "Filters")
-                    }
-                }
+                scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
@@ -66,7 +55,6 @@ fun SearchReleaseScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Search Bar
             TextField(
                 value = uiState.query,
                 onValueChange = { viewModel.updateQuery(it) },
@@ -98,7 +86,6 @@ fun SearchReleaseScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Filter Chips
             val filters = listOf("All Results", "Jazz", "Electronic", "Rock", "Folk")
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -126,7 +113,6 @@ fun SearchReleaseScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // State Handling
             if (uiState.isLoading) {
                 Box(modifier = Modifier.fillMaxWidth().padding(top = 48.dp), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -150,14 +136,17 @@ fun SearchReleaseScreen(
                     Text(text = "Error: ${uiState.error}", color = MaterialTheme.colorScheme.error)
                 }
             } else {
-                // Results List
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(24.dp),
-                    contentPadding = PaddingValues(bottom = 100.dp) // breathing room for navbar
+                    contentPadding = PaddingValues(bottom = 100.dp)
                 ) {
                     items(uiState.results) { record ->
                         SearchResultItem(
                             record = record,
+                            onClick = { 
+                                viewModel.addToWishlist(record) 
+                                onRecordClick(record.id) 
+                            },
                             onAddCollection = { viewModel.addToCollection(it) },
                             onAddWishlist = { viewModel.addToWishlist(it) }
                         )
@@ -171,6 +160,7 @@ fun SearchReleaseScreen(
 @Composable
 fun SearchResultItem(
     record: VinylRecord,
+    onClick: () -> Unit,
     onAddCollection: (VinylRecord) -> Unit,
     onAddWishlist: (VinylRecord) -> Unit
 ) {
@@ -178,6 +168,7 @@ fun SearchResultItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLowest, RoundedCornerShape(12.dp))
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -210,7 +201,7 @@ fun SearchResultItem(
             if (metaInfo.isNotBlank()) {
                 Text(
                     text = metaInfo,
-                    style = MaterialTheme.typography.labelMedium, // roughly corresponds to text-xs
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
             }

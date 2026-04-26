@@ -9,6 +9,7 @@ interface DiscogsApi {
     suspend fun searchReleases(
         @Query("q") query: String,
         @Query("type") type: String = "release",
+        @Query("genre") genre: String? = null,
         @Query("per_page") perPage: Int = 20
     ): DiscogsSearchResponse
 }

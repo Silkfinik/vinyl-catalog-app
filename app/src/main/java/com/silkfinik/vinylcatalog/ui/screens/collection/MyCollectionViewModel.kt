@@ -8,8 +8,11 @@ import com.silkfinik.vinylcatalog.domain.usecase.GetCollectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,13 +22,29 @@ class MyCollectionViewModel @Inject constructor(
     private val deleteRecordUseCase: DeleteRecordUseCase
 ) : ViewModel() {
 
-    val uiState: StateFlow<MyCollectionUiState> = getCollectionUseCase()
-        .map { records -> MyCollectionUiState(records = records, isLoading = false) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = MyCollectionUiState()
-        )
+    enum class SortOrder { DateAdded, Title, Year }
+
+    private val _sortOrder = MutableStateFlow(SortOrder.DateAdded)
+
+    val uiState: StateFlow<MyCollectionUiState> = kotlinx.coroutines.flow.combine(
+        getCollectionUseCase(),
+        _sortOrder
+    ) { records, order ->
+        val sortedRecords = when (order) {
+            SortOrder.Title -> records.sortedBy { it.title }
+            SortOrder.Year -> records.sortedBy { it.year ?: "9999" }
+            SortOrder.DateAdded -> records
+        }
+        MyCollectionUiState(records = sortedRecords, isLoading = false)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = MyCollectionUiState()
+    )
+
+    fun setSortOrder(order: SortOrder) {
+        _sortOrder.update { order }
+    }
 
     fun deleteRecord(record: VinylRecord) {
         viewModelScope.launch {

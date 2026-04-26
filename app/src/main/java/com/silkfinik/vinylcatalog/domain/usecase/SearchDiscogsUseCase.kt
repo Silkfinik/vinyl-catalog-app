@@ -5,5 +5,5 @@ import com.silkfinik.vinylcatalog.domain.repository.VinylRepository
 import javax.inject.Inject
 
 class SearchDiscogsUseCase @Inject constructor(private val repository: VinylRepository) {
-    suspend operator fun invoke(query: String): Result<List<VinylRecord>> = repository.searchDiscogs(query)
+    suspend operator fun invoke(query: String, genre: String? = null): Result<List<VinylRecord>> = repository.searchDiscogs(query, genre)
 }

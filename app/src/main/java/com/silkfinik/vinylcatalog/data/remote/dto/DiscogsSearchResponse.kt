@@ -15,5 +15,6 @@ data class DiscogsReleaseDto(
     val year: String? = null,
     val label: List<String>? = null,
     val format: List<String>? = null,
+    val genre: List<String>? = null,
     @SerialName("cover_image") val coverImage: String? = null
 )

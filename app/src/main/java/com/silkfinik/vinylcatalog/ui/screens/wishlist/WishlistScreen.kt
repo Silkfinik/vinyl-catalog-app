@@ -10,12 +10,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuOpen
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,17 +48,7 @@ fun WishlistScreen(
         topBar = {
             VinylTopAppBar(
                 title = "Wishlist",
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { /* TODO: Menu */ }) {
-                        Icon(Icons.AutoMirrored.Filled.MenuOpen, contentDescription = "Menu")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* TODO: Sort/Filter */ }) {
-                        Icon(Icons.Default.Tune, contentDescription = "Sort")
-                    }
-                }
+                scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
@@ -71,7 +60,6 @@ fun WishlistScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Editorial Header Section
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "CURATION QUEUE",
@@ -96,7 +84,6 @@ fun WishlistScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Estimated Value Widget
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(8.dp))
@@ -108,8 +95,9 @@ fun WishlistScreen(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    val totalValue = uiState.records.size * 32.0
                     Text(
-                        text = "$428.50", // Static for now as per design template
+                        text = "$${String.format("%.2f", totalValue)}",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -119,7 +107,6 @@ fun WishlistScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Wishlist Items
             if (uiState.records.isEmpty() && !uiState.isLoading) {
                 EmptyWishlistState()
             } else {
@@ -134,6 +121,7 @@ fun WishlistScreen(
                             WishlistItem(
                                 record = record,
                                 onClick = { onRecordClick(record.id) },
+                                onAddToCart = { viewModel.moveToCollection(record) },
                                 onRemove = { viewModel.removeFromWishlist(record) }
                             )
                         }
@@ -196,6 +184,7 @@ fun SwipeToCollectionContainer(
 fun WishlistItem(
     record: VinylRecord,
     onClick: () -> Unit,
+    onAddToCart: () -> Unit,
     onRemove: () -> Unit
 ) {
     Row(
@@ -249,13 +238,13 @@ fun WishlistItem(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "$32.00", // Placeholder price matching design
+                text = "$32.00",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 IconButton(
-                    onClick = onRemove,
+                    onClick = onAddToCart,
                     modifier = Modifier
                         .size(48.dp)
                         .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
@@ -263,24 +252,24 @@ fun WishlistItem(
                 ) {
                     Icon(
                         Icons.Default.ShoppingCart, 
-                        contentDescription = "Buy", 
+                        contentDescription = "Add to Collection", 
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 IconButton(
-                    onClick = { /* Currently marked as wishing */ },
+                    onClick = onRemove,
                     modifier = Modifier
                         .size(48.dp)
                         .background(
                             Brush.linearGradient(
-                                colors = listOf(MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.secondaryContainer)
+                                colors = listOf(MaterialTheme.colorScheme.error, MaterialTheme.colorScheme.errorContainer)
                             ), 
                             CircleShape
                         )
                 ) {
                     Icon(
-                        Icons.Default.AutoAwesome, 
-                        contentDescription = "Wishlist", 
+                        Icons.Default.Delete, 
+                        contentDescription = "Remove from Wishlist", 
                         tint = Color.White
                     )
                 }
@@ -331,6 +320,7 @@ fun WishlistItemPreview() {
                     label = null
                 ),
                 onClick = {},
+                onAddToCart = {},
                 onRemove = {}
             )
         }

@@ -25,10 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.silkfinik.vinylcatalog.ui.theme.VinylCatalogTheme
 
-/**
- * The "Record-Label" CTA Button.
- * Pill-shaped, gradient, heavy haptic feedback.
- */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecordButton(
@@ -38,8 +34,7 @@ fun RecordButton(
     contentPadding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
 ) {
     val haptic = LocalHapticFeedback.current
-    
-    // Gradient from secondary to secondary_container at a diagonal angle
+
     val gradientBrush = Brush.linearGradient(
         colors = listOf(
             MaterialTheme.colorScheme.secondary,
@@ -51,7 +46,7 @@ fun RecordButton(
 
     Box(
         modifier = modifier
-            .clip(CircleShape) // Radius: full (pill shape)
+            .clip(CircleShape)
             .background(brush = gradientBrush)
             .combinedClickable(
                 onClick = onClick,

@@ -89,7 +89,11 @@ fun AppNavigation(
                 )
             }
             composable(Screen.Search.route) {
-                SearchReleaseScreen()
+                SearchReleaseScreen(
+                    onRecordClick = { recordId ->
+                        navController.navigate(Screen.Details.createRoute(recordId))
+                    }
+                )
             }
             composable(Screen.Wishlist.route) {
                 WishlistScreen(

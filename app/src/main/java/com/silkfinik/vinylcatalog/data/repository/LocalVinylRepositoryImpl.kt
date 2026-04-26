@@ -37,9 +37,9 @@ class LocalVinylRepositoryImpl @Inject constructor(
         dao.delete(record.toEntity())
     }
 
-    override suspend fun searchDiscogs(query: String): Result<List<VinylRecord>> {
+    override suspend fun searchDiscogs(query: String, genre: String?): Result<List<VinylRecord>> {
         return try {
-            val response = api.searchReleases(query = query)
+            val response = api.searchReleases(query = query, genre = genre)
             Result.success(response.results.map { it.toDomain() })
         } catch (e: Exception) {
             Result.failure(e)

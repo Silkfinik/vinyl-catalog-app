@@ -3,18 +3,18 @@ package com.silkfinik.vinylcatalog.ui.screens.collection
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuOpen
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,38 +36,61 @@ fun MyCollectionScreen(
     val records = uiState.records
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    var showSortMenu by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             VinylTopAppBar(
                 title = "My Collection",
                 scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { /* TODO: Open drawer / menu */ }) {
-                        Icon(Icons.AutoMirrored.Filled.MenuOpen, contentDescription = "Menu")
-                    }
-                },
                 actions = {
-                    IconButton(onClick = { /* TODO: Show sorting options */ }) {
-                        Icon(Icons.Default.Tune, contentDescription = "Sort")
+                    Box {
+                        IconButton(onClick = { showSortMenu = true }) {
+                            Icon(Icons.Default.Sort, contentDescription = "Sort")
+                        }
+                        DropdownMenu(
+                            expanded = showSortMenu,
+                            onDismissRequest = { showSortMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Date Added") },
+                                onClick = { 
+                                    viewModel.setSortOrder(MyCollectionViewModel.SortOrder.DateAdded)
+                                    showSortMenu = false 
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Title") },
+                                onClick = { 
+                                    viewModel.setSortOrder(MyCollectionViewModel.SortOrder.Title)
+                                    showSortMenu = false 
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Release Year") },
+                                onClick = { 
+                                    viewModel.setSortOrder(MyCollectionViewModel.SortOrder.Year)
+                                    showSortMenu = false 
+                                }
+                            )
+                        }
                     }
                 }
             )
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 160.dp),
+        LazyColumn(
             contentPadding = PaddingValues(
                 start = 24.dp,
                 end = 24.dp,
                 top = innerPadding.calculateTopPadding() + 16.dp,
                 bottom = innerPadding.calculateBottomPadding() + 100.dp
             ),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            item(span = { GridItemSpan(this.maxLineSpan) }) {
+            item {
                 Column(modifier = Modifier.padding(bottom = 24.dp)) {
                     Text(
                         text = "RECENTLY ACQUIRED",
